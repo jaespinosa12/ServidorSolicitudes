@@ -1,0 +1,98 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.util.concurrent.ArrayBlockingQueue;
+
+public class ThreadServidor extends Thread {
+
+	private ArrayBlockingQueue<Reserva> reservas = new ArrayBlockingQueue<Reserva>(10);
+
+	// atributo socket
+	private Socket sktCliente = null;
+	
+	private Buffer buffer;
+
+	
+	// defina un atributo identificador local de tipo int
+	private int id;
+
+	public ThreadServidor(Socket accept, int pId, Buffer pBuffer) {
+		sktCliente=accept;
+		id=pId;
+		buffer = pBuffer;
+	}
+
+	public void run()
+	{
+		System.out.println("Inicio de nuevo thread." + id);
+		try {
+			PrintWriter escritor = new PrintWriter(sktCliente.getOutputStream(), true);
+			BufferedReader lector = new BufferedReader(new
+					InputStreamReader(sktCliente.getInputStream()));
+			escritor.print("Petición iniciada");
+			while(!buffer.noHayPeticiones()) {
+				buffer.retirarSolicitud(escritor, lector);
+			}
+			escritor.close();
+			lector.close();
+			sktCliente.close();
+		} catch (IOException | InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
+
+
+	public static void reservar(BufferedReader pIn, PrintWriter pOut) throws IOException {
+		String inputLine;
+		String outputLine;
+		int estado = 0;
+
+		while (estado < 3 && (inputLine = pIn.readLine()) != null) {
+
+			System.out.println("Entrada a procesar: " + inputLine);
+			switch (estado) {
+			case 0:
+				if (inputLine.equalsIgnoreCase("Hola")) {
+					outputLine = "Listo";
+					estado++;
+				} else {
+					outputLine = "ERROR. Esperaba Hola";
+					estado = 0;
+				}
+				break;
+			case 1:
+				try {
+					int val = Integer.parseInt(inputLine);
+					val--;
+					outputLine = "" + val;
+					estado++;
+				} catch (Exception e) {
+					outputLine = "ERROR en argumento esperado";
+					estado = 0;
+				}
+				break;
+			case 2:
+				if (inputLine.equalsIgnoreCase("OK")) {
+					outputLine = "ADIOS";
+					estado++;
+				} else {
+					outputLine = "ERROR. Esperaba OK";
+					estado = 0;
+				}
+				break;
+			default:
+				outputLine = "ERROR";
+				estado = 0;
+			}
+			System.out.println(outputLine);
+			pOut.println(outputLine);
+
+		}
+	}
+
+
+
+}

@@ -8,42 +8,25 @@ import java.util.concurrent.ArrayBlockingQueue;
 
 public class Servidor {
 	
-	private ArrayBlockingQueue<Reserva> solicitudes = new ArrayBlockingQueue<Reserva>(10);
+	private static int PUERTO = 2121;
 	
     public static void main(String[] args) throws IOException {
-
-        ServerSocket serverSocket = null;
-        try {
-            serverSocket = new ServerSocket(4444);
-        } catch (IOException e) {
-            System.err.println("Could not listen on port: 4444.");
-            System.exit(1);
-        }
-
-        Socket clientSocket = null;
-        try {
-            clientSocket = serverSocket.accept();
-        } catch (IOException e) {
-            System.err.println("Accept failed.");
-            System.exit(1);
-        }
-
-        PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-        BufferedReader in = new BufferedReader(
-                new InputStreamReader(
-                clientSocket.getInputStream()));
-        String inputLine, outputLine;
-
-        while ((inputLine = in.readLine()) != null) {
-        	
-            // outputLine = kkp.processInput(inputLine);
-             //out.println(outputLine);
-             //if (outputLine.equals("Bye."))
-                break;
-        }
-        out.close();
-        in.close();
-        clientSocket.close();
-        serverSocket.close();
-    }
+    	ServerSocket ss = null;
+		boolean continuar = true;
+		Buffer buffer = new Buffer(30);
+		try {
+		ss = new ServerSocket(PUERTO);
+		} catch (IOException e) {
+		System.err.println("No pudo crear socket en el puerto:" + PUERTO);
+		System.exit(-1);
+		}
+		
+		for (int i = 0; i < 2; i++) {
+			new ThreadServidor(ss.accept(),i, buffer).start();
+		}
+		while (continuar) {
+			
+		}
+		ss.close();
+	}
 }

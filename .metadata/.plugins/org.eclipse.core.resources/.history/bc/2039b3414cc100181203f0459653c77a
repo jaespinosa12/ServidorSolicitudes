@@ -1,0 +1,49 @@
+import java.util.ArrayList;
+import java.util.concurrent.ArrayBlockingQueue;
+
+
+public class Buffer 
+{
+	private ArrayBlockingQueue<Reserva> reservas;
+	private int capacidad;
+
+	public Buffer ( int n) 
+	{
+		capacidad = n;
+		reservas = new ArrayBlockingQueue<Reserva>(capacidad);
+	}
+
+	public synchronized void almacenarMensaje ( Mensaje msg ) throws InterruptedException
+	{
+		while(mensajes.size() == capacidad){
+			Thread.yield();
+		}
+		mensajes.add(msg);
+		notifyAll();
+
+		synchronized (this) { wait();}
+
+	}
+
+	public synchronized void retirarSolicitud() throws InterruptedException
+	{
+
+		while( reservas.size() == 0){
+			wait();
+		}
+
+		Reserva resp = reservas.poll();
+		resp.reservar;
+		synchronized (this) {notifyAll();}
+	}
+
+	public boolean hayClientes()
+	{
+		return (numClientes == 0);
+	}
+	
+	public void terminar(){
+		numClientes--;
+	}
+
+}
