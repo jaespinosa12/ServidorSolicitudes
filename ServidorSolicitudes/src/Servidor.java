@@ -8,7 +8,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 
 public class Servidor {
 	
-	private static int PUERTO = 65000;
+	private static int PUERTO = 3030;
 	
     public static void main(String[] args) throws IOException {
     	ServerSocket serverSocket = null;
