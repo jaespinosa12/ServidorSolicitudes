@@ -1,7 +1,17 @@
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class Reserva {
+	
+	private final String url = "jdbc:postgresql://172.24.41.208/nidoo_db";
+	
+	private final String usuario = "nidoo_user";
+	
+	private final String clave = "nidoo2503";
 
 	private String barrio;
 
@@ -12,6 +22,7 @@ public class Reserva {
 	private boolean estado;
 	
 	private String cliente;
+	
 
 	public Reserva(String pBarrio, int pNumero, String pParqueadero, String pCliente) {
 		barrio = pBarrio;
@@ -19,8 +30,21 @@ public class Reserva {
 		parqueadero = pParqueadero;
 		cliente = pCliente;
 	}
+	
+	public Connection connectar() {
+		Connection conn = null;
+        try {
+            conn = DriverManager.getConnection(url, usuario, clave);
+            System.out.println("Connected to the PostgreSQL server successfully.");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return conn;
+	}
 
-	public void reservar(PrintWriter pOut, BufferedReader pIn){
+	public String reservar() throws IOException{
+		Connection con = connectar();
+		return "";
 		
 	}
 	

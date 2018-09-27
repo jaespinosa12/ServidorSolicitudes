@@ -8,25 +8,26 @@ import java.util.concurrent.ArrayBlockingQueue;
 
 public class Servidor {
 	
-	private static int PUERTO = 2121;
+	private static int PUERTO = 65000;
 	
     public static void main(String[] args) throws IOException {
-    	ServerSocket ss = null;
-		boolean continuar = true;
-		Buffer buffer = new Buffer(30);
-		try {
-		ss = new ServerSocket(PUERTO);
-		} catch (IOException e) {
-		System.err.println("No pudo crear socket en el puerto:" + PUERTO);
-		System.exit(-1);
-		}
-		
-		for (int i = 0; i < 2; i++) {
-			new ThreadServidor(ss.accept(),i, buffer).start();
-		}
-		while (continuar) {
-			
-		}
-		ss.close();
-	}
+    	ServerSocket serverSocket = null;
+        Socket socket = null;
+
+        try {
+            serverSocket = new ServerSocket(PUERTO);
+        } catch (IOException e) {
+            e.printStackTrace();
+
+        }
+        while (true) {
+            try {
+                socket = serverSocket.accept();
+            } catch (IOException e) {
+                System.out.println("I/O error: " + e);
+            }
+            // new thread for a client
+            new ThreadServidor(socket).start();
+        }
+    }
 }
